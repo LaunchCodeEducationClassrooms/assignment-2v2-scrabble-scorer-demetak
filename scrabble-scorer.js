@@ -56,7 +56,7 @@ let vowelBonusScore = function(word){
   return score};;
 
 let scrabbleScore = function(word){
-  word = word.toUpperCase();
+  word = word.toLowerCase();
   score = 0;
   for (let i=0;i<word.length;i++){
     score +=newPointStructure[word[i]];
@@ -64,31 +64,49 @@ let scrabbleScore = function(word){
   return score;
 };
 
-const scoringAlgorithms = [{name: "Simple Score",
-  description: "Each letter is worth 1 point.",
-  scoreFunction: simpleScore},{name: "Bonus Vowels",
-  description: "Vowels are 3 pts, consonants are 1 pt.",
-  scoreFunction: vowelBonusScore},{name: "Scrabble",
-  description: "The traditional scoring algorithm.",
-  scoreFunction: scrabbleScore}];
+// const scoringAlgorithms = [{name: "Simple Score",
+//   description: "Each letter is worth 1 point.",
+//   scoreFunction: simpleScore},{name: "Bonus Vowels",
+//   description: "Vowels are 3 pts, consonants are 1 pt.",
+//   scoreFunction: vowelBonusScore},{name: "Scrabble",
+//   description: "The traditional scoring algorithm.",
+//   scoreFunction: scrabbleScore}];
+const scoringAlgorithms = [{
+  name: "Simple Score",
+  name: "Bonus Vowels",
+  name: "Scrabble"},{
+    description: "Each letter is worth 1 point.",
+    description: "Vowels are 3 pts, consonants are 1 pt.",
+    description: "The traditional scoring algorithm."},{
+			scoringFunction: simpleScore,
+			scoringFunction: vowelBonusScore,
+			scoringFunction: scrabbleScore
+		}];
 
 function scorerPrompt() {
   let question= "Which scoring algorithm would you like to use?\n\n0 - Simple: One point per character\n1 - Vowel Bonus: Vowels are worth 3 points\n2 - Scrabble: Uses scrabble point system\nEnter 0, 1, or 2: ";
-  let selectedAlgorithm = 3;
+  let selection=3;
 
   const regex = new RegExp(/^[012]$/);
 
-  while (!regex.test(selectedAlgorithm)) {
-   selectedAlgorithm = input.question(question);
+  while (!regex.test(selection)) {
+   selection = input.question(question);
   }
-  return scoringAlgorithms[selectedAlgorithm];
+  if (selection == 0 ){
+    return simpleScore
+  } else if (selection == 1 ){
+    return vowelBonusScore
+  }else if (selection == 2 ){
+    return scrabbleScore
+  }
+  
 }
 
 function transform(oldPointStruct) {
   let newPointStruct={};
   for (const pointValue in oldPointStruct) {
     for (let i=0; i<oldPointStruct[pointValue].length;i++){
-      newPointStruct[oldPointStruct[pointValue][i]]= parseInt(pointValue);
+      newPointStruct[oldPointStruct[pointValue][i].toLowerCase()]= parseInt(pointValue);
     }
   }
   return newPointStruct;
@@ -100,7 +118,7 @@ function runProgram() {
    newPointStructure[" "]=0;
    initialPrompt();
    let algorithm = scorerPrompt();
-   let score = algorithm.scoreFunction(word);
+   let score = algorithm(word);
    console.log(`Score for '${word}': ${score}`);
 }
 
